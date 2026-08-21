@@ -17,7 +17,7 @@ export function WriteReviewForm() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
 
@@ -27,13 +27,43 @@ export function WriteReviewForm() {
     }
 
     setSubmitting(true);
-    addReview({
-      author: author.trim(),
-      title: title.trim(),
-      body: body.trim(),
-      rating,
-    });
-    router.push("/?posted=1");
+    try {
+      const response = await fetch("/api/review-ingest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          author: author.trim(),
+          title: title.trim(),
+          body: body.trim(),
+          rating,
+        }),
+      });
+      const result = (await response.json().catch(() => null)) as {
+        review?: { id?: string; createdAt?: string };
+        error?: string;
+      } | null;
+      if (!response.ok || !result?.review?.id || !result.review.createdAt) {
+        throw new Error(result?.error || "The review could not be submitted.");
+      }
+
+      addReview(
+        {
+          author: author.trim(),
+          title: title.trim(),
+          body: body.trim(),
+          rating,
+        },
+        { id: result.review.id, createdAt: result.review.createdAt },
+      );
+      router.push("/?posted=1");
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "The review could not be submitted.",
+      );
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -47,7 +77,7 @@ export function WriteReviewForm() {
           <h1 className="write-panel__title">Write a review</h1>
           <p className="write-panel__sub">
             Share your experience with <strong>{COMPANY.name}</strong> (
-            {COMPANY.domain}). Reviews are saved in this browser for testing.
+            {COMPANY.domain}). Reviews are sent to the test pipeline and saved in this browser for testing.
           </p>
 
           <form className="write-form" onSubmit={onSubmit} noValidate>

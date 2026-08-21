@@ -19,11 +19,15 @@ export function useReviews() {
     setReady(true);
   }, []);
 
-  const addReview = useCallback((input: Omit<Review, "id" | "createdAt">) => {
+  const addReview = useCallback(
+    (
+      input: Omit<Review, "id" | "createdAt">,
+      metadata?: Pick<Review, "id" | "createdAt">,
+    ) => {
     const next: Review = {
       ...input,
-      id: `user-${crypto.randomUUID()}`,
-      createdAt: new Date().toISOString(),
+      id: metadata?.id ?? `user-${crypto.randomUUID()}`,
+      createdAt: metadata?.createdAt ?? new Date().toISOString(),
     };
     setReviews((prev) => {
       const updated = [next, ...prev];
@@ -31,7 +35,9 @@ export function useReviews() {
       return updated;
     });
     return next;
-  }, []);
+    },
+    [],
+  );
 
   const resetToSeed = useCallback(() => {
     saveReviews(SEED_REVIEWS);
