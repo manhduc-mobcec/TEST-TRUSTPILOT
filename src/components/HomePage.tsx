@@ -13,7 +13,11 @@ function PostedBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (searchParams.get("posted") === "1") setVisible(true);
+    if (searchParams.get("posted") === "1") {
+      // The banner is intentionally synchronized after the URL is available.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setVisible(true);
+    }
   }, [searchParams]);
 
   if (!visible) return null;

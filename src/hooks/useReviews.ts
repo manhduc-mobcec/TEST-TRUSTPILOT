@@ -15,6 +15,8 @@ export function useReviews() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // The browser-only localStorage read must happen after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setReviews(loadReviews());
     setReady(true);
   }, []);
