@@ -27,6 +27,7 @@ test("normalizes a valid review without trusting client IDs or timestamps", () =
 });
 
 test("rejects incomplete or out-of-range review input", () => {
+  assert.throws(() => normalizeReviewInput(null), /object/i);
   assert.throws(
     () => normalizeReviewInput({ author: "Alex", title: "", body: "Text", rating: 5 }),
     /title/i,

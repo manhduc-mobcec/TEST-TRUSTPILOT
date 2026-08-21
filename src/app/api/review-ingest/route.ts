@@ -1,4 +1,4 @@
-import { normalizeReviewInput, type ReviewInput } from "@/lib/review-submit";
+import { normalizeReviewInput } from "@/lib/review-submit";
 
 const DEFAULT_SOURCE_URL = "https://test-trustpilot-henna.vercel.app/";
 
@@ -21,9 +21,9 @@ export async function POST(request: Request) {
     return jsonError("Review Lab webhook must use HTTPS in production", 503);
   }
 
-  let input: ReviewInput;
+  let input: unknown;
   try {
-    input = (await request.json()) as ReviewInput;
+    input = await request.json();
   } catch {
     return jsonError("Request body must be valid JSON", 400);
   }

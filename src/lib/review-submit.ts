@@ -23,13 +23,17 @@ function requiredText(value: unknown, field: string, maxLength: number): string 
 }
 
 export function normalizeReviewInput(
-  input: ReviewInput,
+  input: unknown,
   clock: Clock = {},
 ): Review {
-  const author = requiredText(input.author, "author", 80);
-  const title = requiredText(input.title, "title", 120);
-  const body = requiredText(input.body, "body", 2000);
-  const rating = Number(input.rating);
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new Error("review body must be an object");
+  }
+  const candidate = input as Record<string, unknown>;
+  const author = requiredText(candidate.author, "author", 80);
+  const title = requiredText(candidate.title, "title", 120);
+  const body = requiredText(candidate.body, "body", 2000);
+  const rating = Number(candidate.rating);
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
     throw new Error("rating must be an integer from 1 to 5");
   }
