@@ -16,6 +16,23 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Review Lab integration
+
+The review form sends a normalized payload through the server-only
+`/api/review-ingest` Route Handler. Configure these Vercel environment
+variables without the `NEXT_PUBLIC_` prefix:
+
+```text
+REVIEW_LAB_N8N_WEBHOOK_URL=https://your-n8n-host/webhook/review-lab-ingest
+REVIEW_LAB_WEBHOOK_TOKEN=<same token configured in n8n Header Auth>
+REVIEW_LAB_SOURCE_EXTERNAL_ID=review-lab
+REVIEW_LAB_SOURCE_URL=https://test-trustpilot-henna.vercel.app/
+```
+
+The webhook URL must be an HTTPS endpoint reachable from Vercel. A localhost
+URL is suitable only when running the app locally; Vercel cannot connect to
+the Ubuntu host's `127.0.0.1`.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
